@@ -90,31 +90,45 @@ module.exports = async (req, res) => {
 
   // Build message (HTML parse mode)
   const totalUnits = items.reduce((s, it) => s + (parseInt(it.qty) || 0), 0);
+  const isConsultation = items.length === 1 && items[0].id === 'quick-request';
+
   const lines = [];
-  lines.push('🛒 <b>НОВЕ ЗАМОВЛЕННЯ</b>');
+  lines.push(isConsultation ? '💬 <b>НОВИЙ ЗАПИТ / КОНСУЛЬТАЦІЯ</b>' : '🛒 <b>НОВЕ ЗАМОВЛЕННЯ</b>');
   lines.push('DOUBLEO HoReCa');
   lines.push('');
   lines.push('━━━━━━━━━━━━━━━');
-  items.forEach((it, i) => {
-    const nm = escapeHTML(it.name || it.id || 'Товар');
-    const sub = it.subtitle ? escapeHTML(it.subtitle) : '';
-    const unit = escapeHTML(it.unit || 'шт');
-    const qty = parseInt(it.qty) || 0;
-    lines.push(`<b>${i + 1}. ${nm}</b>`);
-    if (sub) lines.push(`   <i>${sub}</i>`);
-    lines.push(`   📦 Кількість: <b>${qty}</b> × ${unit}`);
+  if (!isConsultation) {
+    items.forEach((it, i) => {
+      const nm = escapeHTML(it.name || it.id || 'Товар');
+      const sub = it.subtitle ? escapeHTML(it.subtitle) : '';
+      const unit = escapeHTML(it.unit || 'шт');
+      const qty = parseInt(it.qty) || 0;
+      lines.push(`<b>${i + 1}. ${nm}</b>`);
+      if (sub) lines.push(`   <i>${sub}</i>`);
+      lines.push(`   📦 Кількість: <b>${qty}</b> × ${unit}`);
+      lines.push('');
+    });
+    lines.push('━━━━━━━━━━━━━━━');
+    lines.push(`Разом: <b>${items.length}</b> позицій · <b>${totalUnits}</b> шт`);
     lines.push('');
-  });
-  lines.push('━━━━━━━━━━━━━━━');
-  lines.push(`Разом: <b>${items.length}</b> позицій · <b>${totalUnits}</b> шт`);
-  lines.push('');
+  } else {
+    lines.push(`<b>Цікавить:</b> ${escapeHTML(items[0].subtitle || '-')}`);
+    lines.push('━━━━━━━━━━━━━━━');
+    lines.push('');
+  }
   lines.push('<b>👤 Клієнт:</b>');
   lines.push(`   Ім'я: ${escapeHTML(name)}`);
   lines.push(`   Телефон: <a href="tel:${encodeURIComponent(phone.replace(/\s/g, ''))}">${escapeHTML(phone)}</a>`);
-  if (msg) {
+  if (!isConsultation && msg) {
     lines.push('');
     lines.push(`<b>💬 Коментар:</b>`);
     lines.push(`   ${escapeHTML(msg)}`);
+  } else if (isConsultation && msg) {
+    // For consultation, msg contains "[Швидкий запит] Цікавить:...", so we just use body.msg but we have it passed differently. We can just use msg since we cleaned it or passed it. Wait, the quick request prepends stuff to msg in script.js, let's just output it.
+    lines.push('');
+    lines.push(`<b>💬 Коментар:</b>`);
+    const commentOnly = body.msg.split(' · ').slice(1).join(' · '); // extract original comment if any
+    lines.push(`   ${escapeHTML(commentOnly || '-')}`);
   }
 
   const text = lines.join('\n');

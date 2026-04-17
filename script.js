@@ -402,3 +402,31 @@ if (orbit && matchMedia('(pointer:fine)').matches) {
     orbit.style.translate = `${x}px ${y}px`;
   });
 }
+
+// --- Live Open Status ---
+const checkOpenStatus = () => {
+  const liveEl = document.querySelector('.live');
+  if (!liveEl) return;
+  const now = new Date();
+  const kyivTimeStr = now.toLocaleString('en-US', { timeZone: 'Europe/Kiev' });
+  const kyivTime = new Date(kyivTimeStr);
+  const day = kyivTime.getDay();
+  const hour = kyivTime.getHours();
+  
+  let isOpen = false;
+  if (day >= 1 && day <= 5) { // Mon-Fri 9:00 - 18:00
+    if (hour >= 9 && hour < 18) isOpen = true;
+  } else if (day === 6) { // Sat 10:00 - 15:00
+    if (hour >= 10 && hour < 15) isOpen = true;
+  }
+  
+  if (isOpen) {
+    liveEl.textContent = 'Склад відкрито';
+    liveEl.classList.remove('closed');
+  } else {
+    liveEl.textContent = 'Склад закрито';
+    liveEl.classList.add('closed');
+  }
+};
+checkOpenStatus();
+setInterval(checkOpenStatus, 60000);
