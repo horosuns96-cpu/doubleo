@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 90" fill="none">
+  <g>
+    <!-- Double O mark -->
+    <circle cx="55" cy="45" r="30" stroke="currentColor" stroke-width="6"/>
+    <circle cx="55" cy="45" r="10" fill="currentColor"/>
+    <circle cx="95" cy="45" r="30" stroke="currentColor" stroke-width="6"/>
+    <circle cx="95" cy="45" r="10" fill="currentColor"/>
+  </g>
+  <text x="140" y="60" font-family="Montserrat, Arial, sans-serif" font-weight="800" font-size="44" letter-spacing="2" fill="currentColor">DOUBLEO</text>
+</svg>

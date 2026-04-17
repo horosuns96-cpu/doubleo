@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/checkout.js": {
+      "maxDuration": 10
+    }
+  },
+  "regions": ["fra1"]
+}
