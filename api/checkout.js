@@ -91,29 +91,31 @@ module.exports = async (req, res) => {
   // Build message (HTML parse mode)
   const totalUnits = items.reduce((s, it) => s + (parseInt(it.qty) || 0), 0);
   const lines = [];
-  lines.push('🛒 <b>НОВЕ ЗАМОВЛЕННЯ</b> · DOUBLEO HoReCa');
+  lines.push('🛒 <b>НОВЕ ЗАМОВЛЕННЯ</b>');
+  lines.push('DOUBLEO HoReCa');
   lines.push('');
-  lines.push('<b>Товари:</b>');
+  lines.push('━━━━━━━━━━━━━━━');
   items.forEach((it, i) => {
     const nm = escapeHTML(it.name || it.id || 'Товар');
     const sub = it.subtitle ? escapeHTML(it.subtitle) : '';
     const unit = escapeHTML(it.unit || 'шт');
     const qty = parseInt(it.qty) || 0;
-    lines.push(`${i + 1}. ${nm} — <b>${qty}</b> × ${unit}`);
-    if (sub) lines.push(`    └ <i>${sub}</i>`);
+    lines.push(`<b>${i + 1}. ${nm}</b>`);
+    if (sub) lines.push(`   <i>${sub}</i>`);
+    lines.push(`   📦 Кількість: <b>${qty}</b> × ${unit}`);
+    lines.push('');
   });
+  lines.push('━━━━━━━━━━━━━━━');
+  lines.push(`Разом: <b>${items.length}</b> позицій · <b>${totalUnits}</b> шт`);
   lines.push('');
-  lines.push(`<b>Позицій:</b> ${items.length} · <b>Одиниць:</b> ${totalUnits}`);
-  lines.push('');
-  lines.push('<b>Контакти:</b>');
-  lines.push(`👤 ${escapeHTML(name)}`);
-  lines.push(`📞 <a href="tel:${encodeURIComponent(phone.replace(/\s/g, ''))}">${escapeHTML(phone)}</a>`);
-  if (msg) lines.push(`💬 ${escapeHTML(msg)}`);
-  lines.push('');
-  const src = meta.page ? escapeHTML(meta.page) : '';
-  const ua = escapeHTML((req.headers['user-agent'] || '').slice(0, 80));
-  if (src) lines.push(`<i>Сторінка: ${src}</i>`);
-  lines.push(`<i>IP: ${escapeHTML(ip)} · ${ua}</i>`);
+  lines.push('<b>👤 Клієнт:</b>');
+  lines.push(`   Ім'я: ${escapeHTML(name)}`);
+  lines.push(`   Телефон: <a href="tel:${encodeURIComponent(phone.replace(/\s/g, ''))}">${escapeHTML(phone)}</a>`);
+  if (msg) {
+    lines.push('');
+    lines.push(`<b>💬 Коментар:</b>`);
+    lines.push(`   ${escapeHTML(msg)}`);
+  }
 
   const text = lines.join('\n');
 

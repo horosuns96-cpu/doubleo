@@ -65,7 +65,15 @@
       tabsEl.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeCat = btn.dataset.cat;
+      // Clear search when user explicitly picks a category
+      if (searchEl.value) { searchEl.value = ''; query = ''; }
       renderGrid();
+      // Scroll the catalog section to top so first items are visible
+      const anchor = document.querySelector('.cat-head') || gridEl;
+      const nav = document.getElementById('nav');
+      const offset = (nav?.offsetHeight || 64) + 16;
+      const y = anchor.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
     });
   });
 
@@ -88,9 +96,12 @@
       });
     }
 
+    // Empty state ONLY when user actually searched something.
+    // Picking a category should never leave the grid empty (every category has products),
+    // but if data ever allows it, we simply skip the "nothing found" visual.
     if (list.length === 0) {
       gridEl.innerHTML = '';
-      emptyEl.hidden = false;
+      if (query) { emptyEl.hidden = false; } else { emptyEl.hidden = true; }
       return;
     }
     emptyEl.hidden = true;

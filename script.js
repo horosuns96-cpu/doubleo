@@ -384,6 +384,15 @@ if (phonePickBtn) {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closePP(); });
 }
 
+// --- Sync dynamic product count across page ---
+const productCount = (window.PRODUCTS || []).length;
+if (productCount > 0) {
+  document.querySelectorAll('[data-dynamic="products"]').forEach(el => {
+    el.textContent = productCount;
+    if (el.hasAttribute('data-count')) el.setAttribute('data-count', productCount);
+  });
+}
+
 // --- Hero parallax orbit (desktop only) ---
 const orbit = document.querySelector('.orbit');
 if (orbit && matchMedia('(pointer:fine)').matches) {
